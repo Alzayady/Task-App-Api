@@ -2,6 +2,7 @@ const mongoose=require('mongoose');
 const validater=require('validator');
 const bcryptjs=require('bcryptjs');
 const jwt=require('jsonwebtoken')
+const task =require('./../module/task')
 const UserSchem=new mongoose.Schema({
       name:{
             type:String, 
@@ -57,10 +58,27 @@ const UserSchem=new mongoose.Schema({
                   required:true
             }
       }]
+      , image:{
+            type:Buffer
+      }
+  },{
+        timestamps:true
   });
 
+  UserSchem.virtual('MyTask',{
+        ref:'task',
+        localField:'_id',
+        foreignField:'owner'
+  })
+
+
+// UserSchem.virtual('MyTask',{
+//       ref:'task',
+//       localField:'_id',
+//       foreignField:'owner'
+// })
+
   UserSchem.pre('save', async function (next){
-     
       if(this.isModified('password')){
            this.password=await bcryptjs.hash(this.password,10);
       }
@@ -68,20 +86,21 @@ const UserSchem=new mongoose.Schema({
       all.forEach((a)=>{
       if(a.Email===this.Email){
             if(a._id.toString()!==this._id.toString()){
-                  console.log(a._id)
-                  console.log(this._id)
                   throw new Error('Email must be unique')
 
             }
       }
       })
-      this.Email[0]='A';
 
       next();
   })
 
+  UserSchem.pre('remove',async function(next){
+      await task.deleteMany({owner:this._id})
+      next()
+  })
   UserSchem.methods.GetAuthentiocation=async function(){
-      return jwt.sign({_id:this._id.toString()},"qwertyuiop123456789QWERT");
+      return jwt.sign({_id:this._id.toString()},process.env.SECRET);
   }
 
   UserSchem.statics.login= async(body)=>{
@@ -94,6 +113,18 @@ const UserSchem=new mongoose.Schema({
           throw new Error("Invalid Password ");
     }
     return User;
+  }
+
+  UserSchem.methods.toJSON = function(){
+      const User = this   
+        const userObject = User.toObject() 
+  
+      delete userObject.password  
+      delete userObject.Tokens 
+      delete userObject.image
+   
+      return userObject 
+       // return {age:this.age,name:this.name,Email:this.Email}
   }
 
   const user=mongoose.model("user",(UserSchem))
