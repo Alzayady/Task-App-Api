@@ -7,5 +7,5 @@ mongoose.connect(process.env.MONGODB_SECRET_KEY,{
 }).then(()=>{
 	console.log("connected to Db");
 }).catch(err=> {
-	console.log("Error",err.message);
+	console.log("error",err.message);
 });

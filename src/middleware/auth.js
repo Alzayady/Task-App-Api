@@ -4,6 +4,7 @@ const auth=async (req ,res ,next)=>{
   try{
     const token=req.header('Authorization').replace('Bearer ' ,'');
     const data=await jwt.verify(token,process.env.SECRET);
+    //Environment variable
     const User=await user.findOne({_id:data._id,'Tokens.token':token})
     if(!User)throw new Error()
     req.User=User;
