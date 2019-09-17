@@ -72,11 +72,6 @@ const UserSchem=new mongoose.Schema({
   })
 
 
-// UserSchem.virtual('MyTask',{
-//       ref:'task',
-//       localField:'_id',
-//       foreignField:'owner'
-// })
 
   UserSchem.pre('save', async function (next){
       if(this.isModified('password')){
@@ -124,7 +119,6 @@ const UserSchem=new mongoose.Schema({
       delete userObject.image
    
       return userObject 
-       // return {age:this.age,name:this.name,Email:this.Email}
   }
 
   const user=mongoose.model("user",(UserSchem))

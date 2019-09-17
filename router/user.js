@@ -8,7 +8,7 @@ const mlter=require('multer')
 const upload=mlter({
   limits:{
     fileSize:1*1024*1024
-  },
+  }, 
   fileFilter(req,file,cb){
         if(!file.originalname.match(/\.(png|jpeg|jpg)$/)){
        return cb(new Error('upload an image'))
@@ -130,7 +130,6 @@ const buffer=await  sharp(req.file.buffer).resize({width:250,height:250}).jpeg()
     if(!User||!User.image){
       throw new Error ()
     }
-   // res.set('Content-Type','image/jpg')
     res.set('Content-Type', 'image/jpeg') 
     res.send(User.image)
    }catch(e){

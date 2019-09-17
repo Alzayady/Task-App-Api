@@ -76,7 +76,6 @@ Router.get("/task",auth,async(req,res)=>{
         if(Task.owner.toString()!==req.User._id.toString()){
           throw new Error ("you don't it's owner")
         }
-       //  const Task=await task.findByIdAndUpdate(req.params.id,req.body,{new:true,runValidators:true});
          if(!Task){return res.status(404).send()}
          examine.forEach((e)=>  Task[e]=req.body[e])
         await Task.save();
